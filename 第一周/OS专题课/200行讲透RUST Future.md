@@ -73,7 +73,8 @@ trait Future {
         self: Pin<&mut Self>,
         // 其次将`wake: fn()` 修改为 `cx: &mut Context<'_>`:
         // 意味着可以携带数据 而不只是一个简单的函数
-        cx: &mut Context<'_>,
+        // 之前的waker可以通过cx.waker获得
+        cx: &mut Context<'_>,//到目前为止,Context只是Waker的包装器。当然后续可能会有其他功能
     ) -> Poll<Self::Output>;
 }
 
@@ -203,6 +204,29 @@ execute_unpin_future(fut); // OK
 let fut = async { /* ... */ };
 pin_mut!(fut);
 execute_unpin_future(fut); // OK
+
+```
+
+
+
+
+
+## Async/await的简单使用
+
+声明函数或语句块
+
+```rust
+// `foo()`返回一个`Future<Output = u8>`,
+// 当调用`foo().await`时，该`Future`将被运行，当调用结束后我们将获取到一个`u8`值
+async fn foo() -> u8 { 5 }
+
+fn bar() -> impl Future<Output = u8> {
+    // 下面的`async`语句块返回`Future<Output = u8>`
+    async {
+        let x: u8 = foo().await;
+        x + 5
+    }
+}
 
 ```
 
