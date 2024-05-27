@@ -216,5 +216,7 @@ async fn main(_spawner: Spawner) {
 
 ## 异步RUST VS RTOS
 
+看完了……但是看的很划水……
 
+等复现完了来写个笔记吧……
 
