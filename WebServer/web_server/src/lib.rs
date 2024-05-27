@@ -8,8 +8,6 @@ pub struct ThreadPool {
 
 type Job = Box<dyn FnOnce() + Send + 'static>;
 
-
-
 impl ThreadPool {
     // 新建线程池
     pub fn new(size: usize) -> ThreadPool {
