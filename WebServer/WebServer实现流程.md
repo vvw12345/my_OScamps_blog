@@ -1,7 +1,7 @@
 # WebServer实现流程
 
 ## 第一周
-
+HTTP服务器 报文简要格式如下
 ```markdown
 Request: [
     "GET / HTTP/1.1",
