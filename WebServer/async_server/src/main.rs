@@ -7,6 +7,7 @@ use std::{
 
 use async_server::{block_on, Reactor, Task};
 
+
 fn main() {
     let start = Instant::now();
     let reactor = Reactor::new();
@@ -41,7 +42,9 @@ async fn handle_connection(mut stream: TcpStream, reactor: Arc<Mutex<Reactor>>) 
     let (status_line, filename) = match &request_line[..] {
         "GET / HTTP/1.1" => ("HTTP/1.1 200 OK", "hello.html"),
         "GET /sleep HTTP/1.1" => {
-            Task::new(reactor.clone(), 5, 1).await; // 模拟异步等待
+            // 模拟异步等待 不能用Thread::sleep直接睡眠
+            // Thread::sleep会阻塞掉当前的线程 导致其他任务无法继续执行
+            Task::new(reactor.clone(), 5, 1).await; 
             ("HTTP/1.1 200 OK", "hello.html")
         }
         _ => ("HTTP/1.1 404 NOT FOUND", "404.html"),
