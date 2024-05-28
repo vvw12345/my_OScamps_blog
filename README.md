@@ -98,3 +98,14 @@ Somethings about the Opening Operating System Camps by vvw12345
 
 
 
+#### 5.28
+
+先给昨天实现的tiny webserver加了点注释
+
+今天找到了飓风内核的代码……
+
+是一个异步内核的实现示例
+
+看了一下文档 然后把源码拉下来
+
+代码还是很不错的……个人预计需要些时间看……
