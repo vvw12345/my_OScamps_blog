@@ -6,3 +6,18 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+#reqwest库是一个常用的HTTP客户端库，可支持异步操作(这里增加主要是用于测试)
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+
+[[bin]]
+name = "async_server"
+path = "src/main.rs"
+
+[[bin]]
+name = "thread_server"
+path = "example/thread_server.rs"
+
+[[bin]]
+name = "client"
+path = "example/client.rs"
