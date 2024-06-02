@@ -10,7 +10,7 @@ async fn main() -> io::Result<()> {
     println!("服务器运行中...");
 
     // 循环接受连接
-    while let Ok((socket, addr)) = listener.accept().await {
+    while let Ok((socket, _addr)) = listener.accept().await {
         //println!("客户端 {} 连接成功", addr);
         // 为每个客户端创建一个异步任务
         tokio::spawn(async move {

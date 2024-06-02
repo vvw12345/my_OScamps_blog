@@ -59,8 +59,10 @@ Request: [
 ### 基本通信
 首先将服务器跑起来 然后就是定义消息处理相关的函数 逻辑是一个循环 读取收到的消息 然后输入消息回复
 ```
-loop {
-        let mut buffer = vec![0; 1024];
+async fn handle_client(mut socket: TcpStream) {
+    let mut buffer = [0; 1024];
+    loop {
+        // 使用socket.read()异步的读取数据
         match socket.read(&mut buffer).await {
             Ok(size) if size == 0 => {
                 // 对端关闭连接
@@ -68,16 +70,16 @@ loop {
             },
             Ok(size) => {
                 let message = String::from_utf8_lossy(&buffer[..size]);
-                println!("收到消息: {}", message);
+                //println!("收到消息: {}", message);
 
-                // 解析消息并处理...
-                // 还没做
-
-                // 发送响应
-                let mut response = String::new();
-                println!("请输入消息（输入 'bye' 结束对话）: ");
-                std::io::stdin().read_line(&mut response).unwrap();
+                // 发送响应(这里的响应是自动响应)
+                let response = format!("服务器响应: {}", message);
                 socket.write_all(response.as_bytes()).await.unwrap();
+                
+                // 之前留下的内容 支持手动输入消息发送
+                // let mut response = String::new();
+                // println!("请输入消息: ");
+                // std::io::stdin().read_line(&mut response).unwrap();
             },
             Err(e) => {
                 // 处理错误
@@ -86,6 +88,7 @@ loop {
             }
         }
     }
+}
 ```
 客户端和服务器端就差不多的逻辑……也是一样的
 目前只能支持一条一条消息(二者之间手动交互)
@@ -101,3 +104,26 @@ loop {
 ![alt text](async_server/results/performance_comparison.png)
 
 
+## 不调库的异步WebServer实现
+在用tokio做了相关的工作之后，应该自己尝试去实现一个简单的异步运行时，然后再支撑起来上述的WebServer应用。
+这里的工作可以参考《200行实现Rust Future》的实现
+在引用了运行时之后，尝试根据运行时去修改我们的函数……
+详细的看代码吧……把Future放在这里
+```
+impl Future for Task {
+    type Output = usize;
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        let mut r = self.reactor.lock().unwrap();
+        if r.is_ready(self.id) {
+            *r.tasks.get_mut(&self.id).unwrap() = TaskState::Finished;
+            Poll::Ready(self.id)
+        } else if r.tasks.contains_key(&self.id) {
+            r.tasks.insert(self.id, TaskState::NotReady(cx.waker().clone()));
+            Poll::Pending
+        } else {
+            r.register(self.data, cx.waker().clone(), self.id);
+            Poll::Pending
+        }
+    }
+}
+```

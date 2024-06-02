@@ -21,3 +21,5 @@ path = "example/thread_server.rs"
 [[bin]]
 name = "client"
 path = "example/client.rs"
+
+
